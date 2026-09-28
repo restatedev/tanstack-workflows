@@ -3,5 +3,5 @@ import { restateWorkflows } from "@restatedev/tanstack-workflows";
 import { checkout } from "./workflows.js";
 
 restate.serve({
-  services: restateWorkflows(checkout)
+  services: restateWorkflows(checkout),
 });
