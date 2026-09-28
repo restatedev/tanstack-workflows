@@ -1,0 +1,20 @@
+{
+  "name": "@restatedev/tanstack-workflows-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --conditions=@restatedev/source src/server.ts",
+    "start": "tsx --conditions=@restatedev/source src/server.ts",
+    "client": "tsx --conditions=@restatedev/source src/client.ts",
+    "check:types": "tsc",
+    "approve": "tsx --conditions=@restatedev/source src/approve.ts"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.17.2",
+    "@restatedev/restate-sdk-clients": "^1.17.2",
+    "@restatedev/tanstack-workflows": "workspace:^",
+    "@restatedev/tanstack-workflows-client": "workspace:^",
+    "@tanstack/workflow-core": "^0.0.4",
+    "zod": "^4.6.5"
+  }
+}

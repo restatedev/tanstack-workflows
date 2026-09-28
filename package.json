@@ -1,0 +1,35 @@
+{
+  "name": "@restatedev/tanstack-workflows-monorepo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "build": "pnpm -r --filter \"./packages/libs/*\" build",
+    "clean": "pnpm -r exec rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "lint": "oxlint",
+    "format": "prettier --write .",
+    "check:format": "prettier --check .",
+    "check:types": "pnpm -r check:types",
+    "check:exports": "pnpm -r --filter \"./packages/libs/*\" check:exports",
+    "verify": "pnpm check:format && pnpm lint && pnpm check:types && pnpm build && pnpm check:exports && pnpm test",
+    "example": "pnpm --filter @restatedev/tanstack-workflows-example dev",
+    "release": "bash scripts/release.sh"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@types/node": "^24.0.0",
+    "oxlint": "^1.86.0",
+    "prettier": "^3.9.9",
+    "tsdown": "^0.23.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
+  },
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  }
+}

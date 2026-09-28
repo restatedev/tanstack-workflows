@@ -1,0 +1,10 @@
+packages:
+  - packages/libs/*
+  - packages/examples/*
+  - packages/tests/*
+
+catalog:
+  "@restatedev/restate-sdk": ^1.17.2
+  "@restatedev/restate-sdk-clients": ^1.17.2
+  "@restatedev/restate-sdk-core": ^1.17.2
+  "@restatedev/restate-sdk-testcontainers": ^1.17.2

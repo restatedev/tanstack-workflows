@@ -1,0 +1,19 @@
+{
+  "name": "@restatedev/tanstack-workflows-integration-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run --root ../../.. packages/tests/integration",
+    "check:types": "tsc"
+  },
+  "devDependencies": {
+    "@restatedev/restate-sdk": "catalog:",
+    "@restatedev/restate-sdk-clients": "catalog:",
+    "@restatedev/restate-sdk-testcontainers": "catalog:",
+    "@restatedev/tanstack-workflows": "workspace:^",
+    "@restatedev/tanstack-workflows-client": "workspace:^",
+    "@tanstack/workflow-core": "^0.0.4",
+    "testcontainers": "^11.14.0",
+    "zod": "^4.6.5"
+  }
+}

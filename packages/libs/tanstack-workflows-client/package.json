@@ -1,0 +1,64 @@
+{
+  "name": "@restatedev/tanstack-workflows-client",
+  "version": "0.0.0",
+  "description": "Client for @restatedev/tanstack-workflows",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "@restatedev/source": "./src/index.ts",
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "check:types": "tsc",
+    "check:exports": "attw --pack . --profile node16"
+  },
+  "peerDependencies": {
+    "@restatedev/restate-sdk-clients": "catalog:"
+  },
+  "devDependencies": {
+    "@restatedev/restate-sdk-clients": "catalog:",
+    "@tanstack/workflow-core": "^0.0.4",
+    "@tanstack/workflow-runtime": "^0.0.3"
+  },
+  "dependencies": {
+    "@restatedev/tanstack-workflows-interface": "workspace:^"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/restatedev/tanstack-workflows.git",
+    "directory": "packages/libs/tanstack-workflows-client"
+  },
+  "homepage": "https://github.com/restatedev/tanstack-workflows#readme",
+  "bugs": {
+    "url": "https://github.com/restatedev/tanstack-workflows/issues"
+  },
+  "author": "Restate Software, Inc.",
+  "keywords": [
+    "restate",
+    "tanstack",
+    "workflow",
+    "durable-execution"
+  ]
+}
