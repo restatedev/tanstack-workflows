@@ -16,10 +16,15 @@ for pkg in packages/libs/*/; do
   (cd "$pkg" && npm pkg set version="$VERSION")
 done
 
+# Keep the standalone template pointing at the new release.
+(cd template && npm pkg set \
+  "dependencies[@restatedev/tanstack-workflows]=^$VERSION" \
+  "dependencies[@restatedev/tanstack-workflows-client]=^$VERSION")
+
 pnpm install --lockfile-only >/dev/null
 pnpm verify
 
-git add packages/libs/*/package.json pnpm-lock.yaml
+git add packages/libs/*/package.json template/package.json pnpm-lock.yaml
 git commit -m "Release v$VERSION"
 git tag "v$VERSION"
 git push --follow-tags

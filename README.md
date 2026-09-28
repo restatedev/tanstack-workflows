@@ -6,6 +6,12 @@ Run your [TanStack workflows](https://github.com/TanStack/workflow) on [Restate]
 npm install @restatedev/tanstack-workflows @restatedev/restate-sdk @tanstack/workflow-core
 ```
 
+Or start from the ready-to-run [template](./template) (server + client):
+
+```bash
+npx degit restatedev/tanstack-workflows/template my-workflows
+```
+
 ## 1. Write a workflow
 
 A plain TanStack workflow:

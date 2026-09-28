@@ -1,0 +1,24 @@
+{
+  "name": "tanstack-workflows-restate-template",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "server": "tsx src/server.ts",
+    "client": "tsx src/client.ts",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.17.2",
+    "@restatedev/restate-sdk-clients": "^1.17.2",
+    "@restatedev/tanstack-workflows": "^0.1.0",
+    "@restatedev/tanstack-workflows-client": "^0.1.0",
+    "@tanstack/workflow-core": "^0.0.4",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
