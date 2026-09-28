@@ -38,8 +38,6 @@ describe("tanstack workflows on restate", () => {
   beforeAll(async () => {
     env = await RestateTestEnvironment.start({ services }, () =>
       new GenericContainer(RESTATE_IMAGE).withEnvironment({
-        RESTATE_EXPERIMENTAL_ENABLE_PROTOCOL_V7: "true",
-        RESTATE_EXPERIMENTAL_ENABLE_VQUEUES: "true",
         // Replay on every suspension point, to catch non-determinism.
         RESTATE_WORKER__INVOKER__INACTIVITY_TIMEOUT: "0s",
       })

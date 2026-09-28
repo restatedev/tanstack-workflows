@@ -217,8 +217,7 @@ export async function runHandler(
   ctx: Context,
   rawInput: unknown
 ): Promise<unknown> {
-  // Requires service protocol v7 (Restate >= 1.7 with
-  // RESTATE_EXPERIMENTAL_ENABLE_PROTOCOL_V7 + RESTATE_EXPERIMENTAL_ENABLE_VQUEUES).
+  // Requires Restate >= 1.8.
   const runId = ctx.request().idempotencyKey;
   if (!runId) {
     throw new TerminalError(

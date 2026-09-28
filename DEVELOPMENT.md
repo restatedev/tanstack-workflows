@@ -35,7 +35,7 @@ attw (checks published exports).
 
 ```bash
 # 1. Start Restate
-npx @restatedev/restate-server
+docker run --name restate --network=host ghcr.io/restatedev/restate:main
 
 # 2. Start the service
 pnpm example

@@ -5,8 +5,8 @@ Standalone example using `@restatedev/tanstack-workflows` and `@restatedev/tanst
 ## Run it
 
 ```bash
-# 1. Start Restate (>= 1.8)
-npx @restatedev/restate-server
+# 1. Start Restate
+docker run --name restate --network=host ghcr.io/restatedev/restate:main
 
 # 2. Start the service (from the repo root: `pnpm example`)
 pnpm dev

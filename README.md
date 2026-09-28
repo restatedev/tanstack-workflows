@@ -51,10 +51,15 @@ import { checkout } from "./checkout.js";
 await restate.serve({ services: restateWorkflows(checkout), port: 9080 });
 ```
 
-Start Restate and register your service:
+Start Restate:
 
 ```bash
-npx @restatedev/restate-server
+docker run --name restate --network=host ghcr.io/restatedev/restate:main
+```
+
+And register your service:
+
+```bash
 npx @restatedev/restate deployments register http://localhost:9080
 ```
 
