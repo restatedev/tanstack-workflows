@@ -1,6 +1,6 @@
 {
   "name": "@restatedev/tanstack-workflows-interface",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Restate service interface of @restatedev/tanstack-workflows workflows",
   "license": "MIT",
   "type": "module",

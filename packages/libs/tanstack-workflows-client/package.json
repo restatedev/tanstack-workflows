@@ -1,6 +1,6 @@
 {
   "name": "@restatedev/tanstack-workflows-client",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Client for @restatedev/tanstack-workflows",
   "license": "MIT",
   "type": "module",
