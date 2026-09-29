@@ -13,9 +13,9 @@ npm install
 
 ```bash
 # 1. Start Restate
-docker run --name restate_dev --rm --network=host docker.restate.dev/restatedev/restate:latest
+docker run --name restate --network=host docker.restate.dev/restatedev/restate:latest
 
-# 2. Start the workflow server (restarts on changes)
+# 2. Start the workflow server
 npm run dev
 
 # 3. Register it with Restate
@@ -28,12 +28,20 @@ npm run client approve order-1
 npm run client result order-1
 ```
 
-Runs up to `10000` complete right away: `npm run client start order-2 4200`.
+## Test it
+
+```bash
+npm test
+```
+
+This starts Restate in Docker with Testcontainers, serves the workflow and runs
+it end to end. It only needs Docker running.
 
 ## What's where
 
 - `src/workflows.ts`: the workflow, plain `@tanstack/workflow-core`.
 - `src/server.ts`: serves it with Restate via `restateWorkflows(...)`.
 - `src/client.ts`: starts runs and delivers approvals via `createRestateWorkflowRuntime(...)`.
+- `src/workflows.test.ts`: end-to-end test against a real Restate.
 
 Open the Restate UI at http://localhost:9070 to inspect runs and their journals.

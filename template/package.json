@@ -6,6 +6,7 @@
     "dev": "tsx watch src/server.ts",
     "server": "tsx src/server.ts",
     "client": "tsx src/client.ts",
+    "test": "vitest run",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -17,8 +18,11 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@restatedev/restate-sdk-testcontainers": "^1.17.2",
     "@types/node": "^24.0.0",
+    "testcontainers": "^11.14.0",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
   }
 }
