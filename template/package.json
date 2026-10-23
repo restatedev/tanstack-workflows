@@ -12,8 +12,8 @@
   "dependencies": {
     "@restatedev/restate-sdk": "^1.17.2",
     "@restatedev/restate-sdk-clients": "^1.17.2",
-    "@restatedev/tanstack-workflows": "^0.1.0",
-    "@restatedev/tanstack-workflows-client": "^0.1.0",
+    "@restatedev/tanstack-workflows": "^0.2.0",
+    "@restatedev/tanstack-workflows-client": "^0.2.0",
     "@tanstack/workflow-core": "^0.0.4",
     "zod": "^4.6.5"
   },
