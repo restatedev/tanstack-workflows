@@ -6,14 +6,17 @@
 // `idempotency-key = runId`, and build a `BaseCtx` whose durable primitives call
 // the Restate Context directly — so `ctx.step` becomes a real Restate journal
 // entry, `ctx.sleep` a Restate timer, and `waitForEvent`/`approve` named Restate
-// signals on the `run` invocation.
+// signals on the `run` invocation. The same service has `signal` / `approve`
+// handlers resolving those signals.
 //
 // Callers address a run only by `runId`: the ingress `lookup`/`attach` APIs
 // resolve the idempotency key to the invocation id / result.
 
 import {
+  iface,
   implement,
   InvocationIdParser,
+  serde,
   TerminalError,
 } from "@restatedev/restate-sdk";
 import type {
@@ -27,6 +30,7 @@ import type {
   ApproveOptions,
   ApprovalResult,
   BaseCtx,
+  SchemaInput,
   Ctx,
   SleepOptions,
   StepContext,
@@ -38,14 +42,9 @@ import type {
 } from "@tanstack/workflow-core";
 import {
   type WorkflowInterface,
-  type WorkflowSupportInterface,
   workflowInterface,
-  workflowSupportInterface,
 } from "@restatedev/tanstack-workflows-interface";
-
-type SupportHandlers = WorkflowSupportInterface["_handlers"];
-type SignalRequest = InferInput<SupportHandlers["signal"]>;
-type ApprovalRequest = InferInput<SupportHandlers["approve"]>;
+import pkg from "../package.json" with { type: "json" };
 import {
   buildInitialState,
   composeMiddlewares,
@@ -53,6 +52,9 @@ import {
   validateWorkflowInput,
   validateWorkflowOutput,
 } from "./middleware.js";
+
+type SignalRequest = InferInput<WorkflowInterface["_handlers"]["signal"]>;
+type ApprovalRequest = InferInput<WorkflowInterface["_handlers"]["approve"]>;
 
 // Names of the Restate signals backing `waitForEvent` and `approve`. A named
 // signal is a durable queue: each `ctx.signal(name)` receives the next
@@ -262,28 +264,63 @@ export type RestateWorkflow<D extends AnyWorkflowDefinition> =
   ServiceDefinition<string, unknown> &
     WorkflowInterface<WorkflowInput<D>, WorkflowOutput<D>>;
 
-export type RestateWorkflowSupport = ServiceDefinition<string, unknown> &
-  WorkflowSupportInterface;
+// Service metadata telling registries and UIs that this is a TanStack workflow
+// whose entry point is `run` (with `idempotency-key = runId`).
+const serviceMetadata = {
+  "restate.dev/integration": "tanstack-workflow",
+  "restate.dev/integration-version": pkg.version,
+};
+
+// Standard JSON Schema (https://standardschema.dev), e.g. zod 4, ArkType.
+type JsonSchemaConverter = Partial<
+  Record<"input" | "output", (options: { target: string }) => object>
+>;
+
+/** JSON Schema of one side of a Standard Schema, if the library can produce it. */
+function toJsonSchema(
+  schema: SchemaInput | undefined,
+  io: "input" | "output"
+): object | undefined {
+  const standard = schema?.["~standard"] as
+    { jsonSchema?: JsonSchemaConverter } | undefined;
+  const convert = standard?.jsonSchema?.[io];
+  if (typeof convert !== "function") return;
+  try {
+    return convert({ target: "draft-2020-12" });
+  } catch {
+    // Not representable (e.g. dates, transforms): advertise no schema.
+    return;
+  }
+}
 
 function restateWorkflow<D extends AnyWorkflowDefinition>(
   def: D
 ): RestateWorkflow<D> {
+  // `run` advertises the definition's schemas in discovery; `runHandler` still
+  // does the validation, so the serdes are plain JSON.
+  const contract = iface.service(def.id, {
+    ...workflowInterface(def.id)._handlers,
+    run: iface.serdes({
+      input: new serde.JsonSerde(toJsonSchema(def.inputSchema, "input")),
+      output: new serde.JsonSerde(toJsonSchema(def.outputSchema, "output")),
+    }),
+  });
   // Implemented untyped: `implement` can't resolve handler types for a generic D.
-  const service = implement(workflowInterface(def.id), {
-    handlers: { run: (ctx, input) => runHandler(def, ctx, input) },
+  const service = implement(contract, {
+    handlers: {
+      run: (ctx, input) => runHandler(def, ctx, input),
+      signal: signalHandler,
+      approve: approveHandler,
+    },
+    metadata: serviceMetadata,
   });
   return service as unknown as RestateWorkflow<D>;
 }
 
-const workflowSupport: RestateWorkflowSupport = implement(
-  workflowSupportInterface,
-  { handlers: { signal: signalHandler, approve: approveHandler } }
-);
-
 /**
  * The Restate services to mount for the given TanStack workflows: one service
- * per workflow (named after its id, with a `run` handler), followed by the
- * well-known `TanstackWorkflowSupport` service delivering signals and approvals.
+ * per workflow, named after its id, with a `run` handler driving the workflow
+ * and `signal` / `approve` handlers delivering to its runs.
  *
  * Each workflow service doubles as the interface for clients.
  *
@@ -294,9 +331,6 @@ const workflowSupport: RestateWorkflowSupport = implement(
  */
 export function restateWorkflows<const D extends AnyWorkflowDefinition[]>(
   ...defs: D
-): [...{ [K in keyof D]: RestateWorkflow<D[K]> }, RestateWorkflowSupport] {
-  return [...defs.map(restateWorkflow), workflowSupport] as [
-    ...{ [K in keyof D]: RestateWorkflow<D[K]> },
-    RestateWorkflowSupport,
-  ];
+): { [K in keyof D]: RestateWorkflow<D[K]> } {
+  return defs.map(restateWorkflow) as { [K in keyof D]: RestateWorkflow<D[K]> };
 }

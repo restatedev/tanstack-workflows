@@ -54,6 +54,36 @@ describe.each([{ alwaysReplay: true }, { alwaysReplay: false }])(
       await env?.stop();
     });
 
+    it("registers each workflow as a marked service with run's schemas", async () => {
+      const res = await fetch(`${env.adminAPIBaseUrl()}/services/steps`);
+      expect(res.ok).toBe(true);
+      const service = (await res.json()) as {
+        metadata: Record<string, string>;
+        handlers: Array<{
+          name: string;
+          input_json_schema?: unknown;
+          output_json_schema?: unknown;
+        }>;
+      };
+      expect(service.metadata["restate.dev/integration"]).toBe(
+        "tanstack-workflow"
+      );
+      const run = service.handlers.find((h) => h.name === "run");
+      expect(run?.input_json_schema).toMatchObject({
+        properties: { name: { type: "string" } },
+      });
+      expect(run?.output_json_schema).toMatchObject({
+        properties: { greeting: { type: "string" } },
+      });
+      expect(
+        (
+          await fetch(
+            `${env.adminAPIBaseUrl()}/services/TanstackWorkflowSupport`
+          )
+        ).status
+      ).toBe(404);
+    });
+
     it("runs steps and returns validated output", async () => {
       expect(
         await runtime.startRun({

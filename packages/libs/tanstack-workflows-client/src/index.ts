@@ -8,10 +8,7 @@
 // `status` (Restate >= 1.8).
 
 import * as clients from "@restatedev/restate-sdk-clients";
-import {
-  workflowInterface,
-  workflowSupportInterface,
-} from "@restatedev/tanstack-workflows-interface";
+import { workflowInterface } from "@restatedev/tanstack-workflows-interface";
 import type { ApprovalResult } from "@tanstack/workflow-core";
 import type {
   WorkflowExecution,
@@ -112,7 +109,9 @@ const target = (workflowId: string, runId: string) => ({
  */
 export function createRestateWorkflowRuntime(opts: clients.ConnectionOpts) {
   const ingress = clients.connect(opts);
-  const support = ingress.sendClient(workflowSupportInterface);
+  // Each workflow's service has the `signal` / `approve` handlers of its runs.
+  const workflow = (workflowId: string) =>
+    ingress.sendClient(workflowInterface(workflowId));
 
   const baseUrl = opts.url.replace(/\/+$/, "");
   const post = async (path: string, body: unknown): Promise<unknown> => {
@@ -199,7 +198,7 @@ export function createRestateWorkflowRuntime(opts: clients.ConnectionOpts) {
     ): Promise<RestateWorkflowRunResult> {
       const { runId, workflowId, signalId, name, payload } = args;
       return deliver(workflowId, runId, (invocationId) =>
-        support.signal(
+        workflow(workflowId).signal(
           { invocationId, name, payload },
           clients.rpc.sendOpts({
             idempotencyKey: `${invocationId}:signal:${signalId}`,
@@ -214,7 +213,7 @@ export function createRestateWorkflowRuntime(opts: clients.ConnectionOpts) {
     ): Promise<RestateWorkflowRunResult> {
       const { runId, workflowId, approval } = args;
       return deliver(workflowId, runId, (invocationId) =>
-        support.approve(
+        workflow(workflowId).approve(
           {
             invocationId,
             approvalId: approval.approvalId,
