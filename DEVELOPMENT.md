@@ -4,7 +4,7 @@
 
 | Path                                       | What                                                                 |
 | ------------------------------------------ | -------------------------------------------------------------------- |
-| `packages/libs/tanstack-workflows`         | Server adapter: `restateWorkflows(...)`                              |
+| `packages/libs/tanstack-workflows`         | Server adapter: `restateWorkflows(...)`, one service per workflow    |
 | `packages/libs/tanstack-workflows-interface` | Restate `iface` contracts, only depends on `@restatedev/restate-sdk-core` |
 | `packages/libs/tanstack-workflows-client`  | `createRestateWorkflowRuntime(...)`                                  |
 | `packages/examples/basic`                  | Runnable checkout example                                            |

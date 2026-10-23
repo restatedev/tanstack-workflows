@@ -1,5 +1,1 @@
-export {
-  restateWorkflows,
-  type RestateWorkflow,
-  type RestateWorkflowSupport,
-} from "./restate-workflow.js";
+export { restateWorkflows, type RestateWorkflow } from "./restate-workflow.js";

@@ -124,10 +124,39 @@ await runtime.deliverSignal({
 | `now()` / `uuid()`        | Deterministic `ctx.date.now()` / `ctx.rand.uuidv4()`              |
 | `runId`                   | Idempotency key of the run                                        |
 
-Each workflow becomes a Restate service named after its `id`, plus one shared
-`TanstackWorkflowSupport` service that delivers signals and approvals.
-
 You get Restate's UI, tracing and journal introspection for free.
+
+## The Restate services
+
+Each workflow becomes one Restate service named after its `id`, with three handlers:
+
+| Handler   | What                                                                                            |
+|-----------|-------------------------------------------------------------------------------------------------|
+| `run`     | The entry point: input = the workflow's input, output = its output. Needs an idempotency key: the `runId`. |
+| `signal`  | `{ invocationId, name, payload? }`: resolves a `waitForEvent(name)` of the run (`deliverSignal`). |
+| `approve` | `{ invocationId, approvalId, approved, feedback? }`: resolves an `approve({ id })` of the run (`deliverApproval`). |
+
+`invocationId` is the `run` invocation's id, from the ingress `lookup` API; the client does that for you.
+
+Each workflow service carries this service metadata, so registries and UIs can recognize it:
+
+| Key                               | Value                                        |
+|-----------------------------------|----------------------------------------------|
+| `restate.dev/integration`         | `tanstack-workflow`                          |
+| `restate.dev/integration-version` | the `@restatedev/tanstack-workflows` version |
+
+And `run`'s input and output carry the workflow's `input` / `output` schemas as JSON Schema
+in the discovery manifest, when the schema library can produce one
+([Standard JSON Schema](https://standardschema.dev), e.g. zod 4). Otherwise they're left out.
+Validation is unchanged: the workflow validates its input and output itself.
+
+To deliver from another Restate handler without going through `signal` / `approve`, resolve
+the run's signals directly: `event:<name>` with the event's payload, `approval:<id>` with
+`{ approved, feedback? }`.
+
+```ts
+ctx.invocation(invocationId).signal("approval:manager").resolve({ approved: true });
+```
 
 ## Contributing
 

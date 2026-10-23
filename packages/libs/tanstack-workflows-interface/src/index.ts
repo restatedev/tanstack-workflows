@@ -30,6 +30,10 @@ export type WorkflowInterface<I = unknown, O = unknown> = ServiceDescriptor<
   {
     /** Drives the workflow. Invoke with `idempotency-key = runId`. */
     run: HandlerDescriptor<I, O, false>;
+    /** Resolves a pending `waitForEvent` on a run of this workflow. */
+    signal: HandlerDescriptor<SignalRequest, void, false>;
+    /** Resolves a pending `approve` on a run of this workflow. */
+    approve: HandlerDescriptor<ApprovalRequest, void, false>;
   }
 >;
 
@@ -37,18 +41,9 @@ export type WorkflowInterface<I = unknown, O = unknown> = ServiceDescriptor<
 export function workflowInterface<I = unknown, O = unknown>(
   id: string
 ): WorkflowInterface<I, O> {
-  return iface.service(id, { run: iface.json<I, O>() });
-}
-
-/** Well-known service delivering signals and approvals to runs of any workflow. */
-export const workflowSupportInterface = iface.service(
-  "TanstackWorkflowSupport",
-  {
-    /** Resolves a pending `waitForEvent` on a run. */
+  return iface.service(id, {
+    run: iface.json<I, O>(),
     signal: iface.json<SignalRequest, void>(),
-    /** Resolves a pending `approve` on a run. */
     approve: iface.json<ApprovalRequest, void>(),
-  }
-);
-
-export type WorkflowSupportInterface = typeof workflowSupportInterface;
+  });
+}
